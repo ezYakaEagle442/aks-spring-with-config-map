@@ -6,7 +6,6 @@ target/
 
 prv/*
 deploy/*
-cnf/*
 setenv.*
 .env
 
