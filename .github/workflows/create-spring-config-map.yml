@@ -85,6 +85,7 @@ jobs:
           # and packages each of those files into the new ConfigMap
           
           kubectl create configmap spring-app-config --from-file=$CONFIG_MAP_DIR --dry-run=client -o yaml > spring-app-config.yaml
+          # immutable: true ==> https://kubernetes.io/docs/concepts/configuration/configmap/#configmap-immutable
           
           ls -al $CONFIG_MAP_DIR
 
