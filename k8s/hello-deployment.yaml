@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-service
+spec:
+  selector:
+      matchLabels:
+        app: hello-service
+  replicas: 1
+  template:
+      metadata:
+        labels:
+            app: hello-service
+      spec:
+        - name: hello-service
+          image: ${CONTAINER_REGISTRY}.azurecr.io/${REPO}/hello-service:${IMAGE_TAG}
+          imagePullPolicy: Always
+          env:
+          - name: "SPRING_CLOUD_AZURE_TENANT_ID"
+            valueFrom:
+              configMapKeyRef:
+                name: springcloudazure
+                key: SPRING_CLOUD_AZURE_TENANT_ID
+          livenessProbe: # https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints.kubernetes-probes
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+            failureThreshold: 5
+            successThreshold: 1
+            periodSeconds: 30
+            httpGet:
+              # https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+              # management.endpoints.web.base-path=/actuator
+              # https://github.com/spring-projects/spring-petclinic/blob/master/src/main/resources/application.properties
+              path: /manage/health/liveness # /actuator
+              port: 8081
+              scheme: HTTP
+          readinessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+            failureThreshold: 5
+            successThreshold: 1
+            periodSeconds: 30
+            httpGet:
+              path: "/manage/health/readiness"
+              port: 8081           
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 8080
+            name: server
+          - containerPort: 8081
+            name: management
+
+          volumeMounts:
+          - name: application-config 
+            mountPath: "/deployments/config" 
+            readOnly: true
+
+          # https://kubernetes.io/docs/concepts/configuration/configmap/
+          # https://developers.redhat.com/blog/2017/10/03/configuring-spring-boot-kubernetes-configmap#setup
+
+      volumes:
+      - name: application-config
+        configMap:
+          name: spring-app-config 
+          items:
+          - key: application.properties 
+            path: application.properties              
+        
