@@ -4,6 +4,9 @@
 @maxLength(21)
 param appName string = 'hello${uniqueString(resourceGroup().id, subscription().id)}'
 
+@description('The location of the Managed Cluster resource.')
+param location string = resourceGroup().location
+
 @description('The name of the Managed Cluster resource.')
 param clusterName string = 'aks-${appName}'
 
@@ -24,11 +27,8 @@ param k8sVersion string = '1.24.6' //1.25.2 Alias in Preview
 @description('The SubnetID to deploy the AKS Cluster')
 param subnetID string
 
-@description('The location of the Managed Cluster resource.')
-param location string = resourceGroup().location
-
 @description('Optional DNS prefix to use with hosted Kubernetes API server FQDN.')
-param dnsPrefix string = 'appinnojava'
+param dnsPrefix string = appName // 'hellospringaksconfigmap'
 
 @description('Disk size (in GB) to provision for each of the agent pool nodes. This value ranges from 0 to 1023. Specifying 0 will apply the default disk size for that agentVMSize.')
 @minValue(0)
@@ -44,7 +44,7 @@ param logAnalyticsWorkspaceName string = 'log-${appName}'
 @description('The number of nodes for the cluster.')
 @minValue(1)
 @maxValue(12)
-param agentCount int = 3
+param agentCount int = 1
 
 @description('The size of the Virtual Machine.')
 param agentVMSize string = 'Standard_D2s_v3'
@@ -65,10 +65,10 @@ param daprAddonHA bool = false
 param kedaAddon bool = false
  
 @description('Installs Azure Workload Identity into the cluster')
-param workloadIdentity bool = true
+param workloadIdentity bool = false
 
 @description('Configures the AKS cluster as an OIDC issuer for use with Workload Identity')
-param oidcIssuer bool = true
+param oidcIssuer bool = false
 
 @description('Rotation poll interval for the AKS KV CSI provider')
 param keyVaultAksCSIPollInterval string = '2m'
@@ -88,7 +88,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10
   name: logAnalyticsWorkspaceName
 }
 
-resource aksIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' existing = {
+resource aksIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: aksIdentityName
 }
 
@@ -115,20 +115,17 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = {
       {
         availabilityZones: [
           '1'
-          '2'
-          '3'
         ]        
         name: 'agentpool'
         osDiskSizeGB: osDiskSizeGB
         enableAutoScaling: true
         count: agentCount
-        minCount: 2
-        maxCount: 4
+        minCount: 1
+        maxCount: 1
         maxPods: 30
         vmSize: agentVMSize
         osType: 'Linux'
         mode: 'System'
-        // spotMaxPrice: json('0.0229')
         vnetSubnetID: subnetID
         osSKU: 'CBLMariner'
       }  
@@ -166,11 +163,6 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = {
       enablePrivateClusterPublicFQDN: false     
       enableVnetIntegration: false
     }      
-    // see https://github.com/Azure/azure-rest-api-specs/issues/17563
-    // https://github.com/brwilkinson/AzureDeploymentFramework/blob/main/ADF/bicep/AKS.bicep (main)
-    // https://github.com/brwilkinson/AzureDeploymentFramework/blob/main/ADF/bicep/AKS-AKS.bicep
-    // https://github.com/brwilkinson/AzureDeploymentFramework/blob/main/ADF/tenants/AOA/ACU1.T5.parameters.json#L985
-    // https://docs.microsoft.com/en-us/rest/api/aks/managed-clusters/create-or-update#managedclusteraddonprofile
 
     addonProfiles: {
       omsagent: {
@@ -191,15 +183,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = {
           version: !empty(azurepolicy) ? 'v2' : json('null')
         }
       }
-      /*
-      ingressApplicationGateway: {
-        enabled: true
-        config: {
-          applicationGatewayId: appGatewayResourceId
-          effectiveApplicationGatewayId: appGatewayResourceId
-        }
-      }
-      */
+
       azureKeyvaultSecretsProvider: {
         enabled: true
         config: {
@@ -268,38 +252,6 @@ output spnClientId string = aks.properties.servicePrincipalProfile.clientId
 output aksOutboundType string = aks.properties.networkProfile.outboundType
 output aksEffectiveOutboundIPs array = aks.properties.networkProfile.loadBalancerProfile.effectiveOutboundIPs
 output aksManagedOutboundIPsCount int = aks.properties.networkProfile.loadBalancerProfile.managedOutboundIPs.count
-
-// The default number of managed outbound public IPs is 1.
-// https://learn.microsoft.com/en-us/azure/aks/load-balancer-standard#scale-the-number-of-managed-outbound-public-ips
-// output aksOutboundIPs array = aks.properties.networkProfile.loadBalancerProfile.outboundIPs.publicIPs
-
-// output ingressIdentity string = aks.properties.addonProfiles.ingressApplicationGateway.identity.objectId
-
-/*
-@description('This output can be directly leveraged when creating a ManagedId Federated Identity')
-output aksOidcFedIdentityProperties object = {
-  issuer: oidcIssuer ? aks.properties.oidcIssuerProfile.issuerURL : ''
-  audiences: ['api://AzureADTokenExchange']
-  subject: 'system:serviceaccount:ns:svcaccount'
-}
-
-var customersServiceAppIdentityName = 'id-aks-petclinic-customers-service-dev-westeurope-101'
-resource customersServicedentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' existing = {
-  name: customersServiceAppIdentityName
-}
-
-resource federatedCredentials 'Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials@2022-01-31-preview' = {
-  name: 'customersServiceFedIdentity'
-  parent: customersServicedentity
-  properties: {
-    audiences: [
-      'api://AzureADTokenExchange'
-    ]
-    issuer: 'https://token.actions.githubusercontent.com'
-    subject: 'system:serviceaccount:petclinic:sa-aad-wi-customers'
-  }
-}
-*/
 
 
 resource AKSDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {

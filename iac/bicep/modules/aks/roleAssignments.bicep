@@ -2,9 +2,6 @@
 @maxLength(21)
 param appName string = 'hello${uniqueString(resourceGroup().id, subscription().id)}'
 
-@description('The name of the ACR, must be UNIQUE. The name must contain only alphanumeric characters, be globally unique, and between 5 and 50 characters in length.')
-param acrName string = 'acr${appName}'
-
 param aksClusterPrincipalId string
 
 @allowed([
@@ -16,22 +13,12 @@ param aksClusterPrincipalId string
 @description('VNet Built-in role to assign')
 param networkRoleType string
 
-@allowed([
-  'AcrPull'
-  'AcrPush'
-])
-@description('ACR Built-in role to assign')
-param acrRoleType string = 'AcrPull'
 
 param vnetName string
 param subnetName string
 
 resource aksSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' existing = {
   name: '${vnetName}/${subnetName}'
-}
-
-resource acr 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' existing = {
-  name: acrName
 }
 
 // https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
@@ -59,3 +46,7 @@ resource AKSClusterRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-
     principalType: 'ServicePrincipal'
   }
 }
+
+output AKSClusterRoleAssignmentName string = AKSClusterRoleAssignment.name
+output AKSClusterRoleAssignmentDefinitionId string = AKSClusterRoleAssignment.properties.roleDefinitionId
+output AKSClusterRoleAssignmentUpdatedOn string = AKSClusterRoleAssignment.properties.updatedOn
