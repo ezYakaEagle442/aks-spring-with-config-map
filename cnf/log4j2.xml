@@ -44,7 +44,7 @@
       <AppenderRef ref="STDOUT" />
     </Logger>
  
-    <Root level="INFO">
+    <Root level="debug">
       <AppenderRef ref="STDOUT"/>
     </Root>
   </Loggers>
