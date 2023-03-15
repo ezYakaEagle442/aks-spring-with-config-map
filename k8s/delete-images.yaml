@@ -4,4 +4,7 @@ metadata:
   name: imagelist
 spec:
   images:
-    - docker.io/library/alpine:3.7.3   # You can also use "*" to specify all non-running images
+    #- docker.io/library/alpine:3.7.3   # You can also use "*" to specify all non-running images
+    - acrhello42.azurecr.io/hello/hello-service:74c1b81c2774
+    - acrhello42.azurecr.io/hello/hello-service:bd739c61497d
+    - acrhello42.azurecr.io/hello/hello-service:v0.1.42
