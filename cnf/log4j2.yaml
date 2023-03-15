@@ -1,6 +1,7 @@
 Configuration:
-  status: warn
   name: YAMLConfigTest
+  status: warn
+  monitorInterval: 5
   properties:
     property:
       name: filename
