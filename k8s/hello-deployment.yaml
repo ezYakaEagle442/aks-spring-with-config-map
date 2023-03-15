@@ -12,36 +12,31 @@ spec:
         labels:
             app: hello-service
       spec:
+        containers:
         - name: hello-service
           image: ${CONTAINER_REGISTRY}.azurecr.io/${REPOSITORY}/hello-service:${IMAGE_TAG}
           imagePullPolicy: Always
-          env:
-          - name: "SPRING_CLOUD_AZURE_TENANT_ID"
-            valueFrom:
-              configMapKeyRef:
-                name: springcloudazure
-                key: SPRING_CLOUD_AZURE_TENANT_ID
+          # By default, the /actuator/httpexchanges endpoint is disabled in Spring Boot 3. To enable it, you will need to add the following to your application.properties file
           livenessProbe: # https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints.kubernetes-probes
-            initialDelaySeconds: 10
-            timeoutSeconds: 30
+            initialDelaySeconds: 5
+            timeoutSeconds: 15
             failureThreshold: 5
             successThreshold: 1
-            periodSeconds: 30
+            periodSeconds: 15
             httpGet:
               # https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
               # management.endpoints.web.base-path=/actuator
-              # https://github.com/spring-projects/spring-petclinic/blob/master/src/main/resources/application.properties
-              path: /manage/health/liveness # /actuator
+              path: /actuator/health/liveness
               port: 8081
               scheme: HTTP
           readinessProbe:
-            initialDelaySeconds: 10
-            timeoutSeconds: 30
+            initialDelaySeconds: 5
+            timeoutSeconds: 15
             failureThreshold: 5
             successThreshold: 1
-            periodSeconds: 30
+            periodSeconds: 15
             httpGet:
-              path: "/manage/health/readiness"
+              path: "/actuator/health/readiness"
               port: 8081           
 
           resources:
@@ -59,17 +54,17 @@ spec:
 
           volumeMounts:
           - name: application-config 
-            mountPath: "/deployments/config" 
+            mountPath: "/tmp/app" 
             readOnly: true
 
           # https://kubernetes.io/docs/concepts/configuration/configmap/
           # https://developers.redhat.com/blog/2017/10/03/configuring-spring-boot-kubernetes-configmap#setup
 
-      volumes:
-      - name: application-config
-        configMap:
-          name: spring-app-config 
-          items:
-          - key: application.properties 
-            path: application.properties              
+        volumes:
+        - name: application-config
+          configMap:
+            name: spring-app-config 
+            items:
+            - key:  log4j2.yaml  
+              path:  log4j2.yaml               
         
