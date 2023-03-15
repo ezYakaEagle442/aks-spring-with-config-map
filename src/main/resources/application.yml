@@ -6,7 +6,7 @@ management:
     readinessstate:
       enabled: true
   endpoints:
-    enabled-by-default: false
+    enabled-by-default: true
     web:
       base-path: "/actuator"
       exposure: # https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/actuator.html#actuator.endpoints.exposing
@@ -19,6 +19,8 @@ management:
         exclude: "beans"           
   endpoint:
     health:
+      show-details: always
+      show-components: always
       enabled: true
       status:
         http-mapping:
