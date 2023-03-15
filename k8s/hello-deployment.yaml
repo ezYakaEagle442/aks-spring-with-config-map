@@ -54,8 +54,8 @@ spec:
 
           volumeMounts:
           - name: application-config 
-            mountPath: "/tmp/app" 
-            readOnly: true
+            mountPath:  /etc/config #  .spec.containers[].volumeMounts[].mountPath must be an unused directory name where you would like the ConfigMap to appear. NOT /tmp/app where the app.jar is located
+            readOnly: false
 
           # https://kubernetes.io/docs/concepts/configuration/configmap/
           # https://developers.redhat.com/blog/2017/10/03/configuring-spring-boot-kubernetes-configmap#setup
