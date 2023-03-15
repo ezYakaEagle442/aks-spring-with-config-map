@@ -232,6 +232,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = {
 // https://github.com/Azure/azure-rest-api-specs/issues/17563
 output aksId string = aks.id
 output aksClusterName string = aks.name
+output aksNodeResourceGroup string = aks.properties.nodeResourceGroup
 output controlPlaneFQDN string = aks.properties.fqdn
 output kubeletIdentity string = aks.properties.identityProfile.kubeletidentity.objectId
 output keyVaultAddOnIdentity string = aks.properties.addonProfiles.azureKeyvaultSecretsProvider.identity.objectId
