@@ -5,10 +5,10 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: $ING_HOST
+  - host: helloconfigmap.cloudapp.azure.com
     http:
       paths:
-      - path: /hello-service
+      - path: /
         pathType: "Prefix"      
         backend:
           service:

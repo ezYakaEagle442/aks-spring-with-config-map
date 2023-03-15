@@ -13,7 +13,7 @@ spec:
             app: hello-service
       spec:
         - name: hello-service
-          image: ${CONTAINER_REGISTRY}.azurecr.io/${REPO}/hello-service:${IMAGE_TAG}
+          image: ${CONTAINER_REGISTRY}.azurecr.io/${REPOSITORY}/hello-service:${IMAGE_TAG}
           imagePullPolicy: Always
           env:
           - name: "SPRING_CLOUD_AZURE_TENANT_ID"
