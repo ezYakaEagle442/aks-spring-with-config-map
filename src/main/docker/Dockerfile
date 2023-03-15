@@ -22,4 +22,4 @@ COPY "./target/hellospring-0.0.1-SNAPSHOT.jar" /tmp/app/app.jar
 #RUN java -Djarmode=layertools -jar "/tmp/app/app.jar" extract
 RUN ls  /tmp/app
 EXPOSE 80 8080 8081
-ENTRYPOINT ["java", "-jar", "/tmp/app/app.jar", "-Dlogging.config=log4j2.xml", "--server.port=8080"]
+ENTRYPOINT ["java", "-jar", "/tmp/app/app.jar", "--server.port=8080"]
