@@ -9,6 +9,9 @@ Read :
 - [https://developers.redhat.com/blog/2017/10/03/configuring-spring-boot-kubernetes-configmap#setup](https://developers.redhat.com/blog/2017/10/03/configuring-spring-boot-kubernetes-configmap#setup)
 - [https://medium.com/@safvan.kothawala/change-log-level-in-all-kubernetes-pods-in-one-go-without-pod-restart-d7558f450dc0](https://medium.com/@safvan.kothawala/change-log-level-in-all-kubernetes-pods-in-one-go-without-pod-restart-d7558f450dc0)
 - [https://sematext.com/blog/java-logging-frameworks/](https://sematext.com/blog/java-logging-frameworks/)
+- [https://gap.gjensidige.io/docs/guides/preparing-spring-boot-app-for-kubernetes](https://gap.gjensidige.io/docs/guides/preparing-spring-boot-app-for-kubernetes)
+- [https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.logback](https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.logback)
+- [https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.log4j](https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.log4j)
 
 ![Spring Cloud Config-Server Architecture](./SpringCloudConfigServer.png)
 
@@ -104,6 +107,10 @@ az role assignment create --assignee $USR_SPN_ID --role $acr_pull_role --scope $
 acr_push_role="/subscriptions/$SUBSCRIPTION_ID/providers/Microsoft.Authorization/roleDefinitions/8311e382-0749-4cb8-b61a-304f252e45ec"
 az role assignment create --assignee $USR_SPN_ID --role $acr_push_role --scope $ACR_ID
 
+
+ mvn -B clean package --file pom.xml -DskipTests 
+ java -Dlogging.config=./cnf/log4j2.xml -jar target/hellospring-0.0.1-SNAPSHOT.jar
+ 
 # image: ${CONTAINER_REGISTRY}.azurecr.io/${REPO}/hello-service:${IMAGE_TAG}
 DOCKERFILE_PATH="src/main/docker/Dockerfile"
 export REPOSITORY="hello"
