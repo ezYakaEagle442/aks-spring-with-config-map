@@ -2,6 +2,15 @@
 Spring Boot App deployed to AKS using a ConfigMap instead of the Spring-Config-Server
 
 
+Read :
+- [https://kubernetes.io/docs/concepts/configuration/configmap/#using-configmaps-as-files-from-a-pod](https://kubernetes.io/docs/concepts/configuration/configmap/#using-configmaps-as-files-from-a-pod)
+- [https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap)
+- [https://joshgunh.medium.com/spring-cloud-config-vs-kubernetes-configmap-detailed-comparison-bce64b594af8](https://joshgunh.medium.com/spring-cloud-config-vs-kubernetes-configmap-detailed-comparison-bce64b594af8)
+- [https://developers.redhat.com/blog/2017/10/03/configuring-spring-boot-kubernetes-configmap#setup](https://developers.redhat.com/blog/2017/10/03/configuring-spring-boot-kubernetes-configmap#setup)
+- [https://medium.com/@safvan.kothawala/change-log-level-in-all-kubernetes-pods-in-one-go-without-pod-restart-d7558f450dc0](https://medium.com/@safvan.kothawala/change-log-level-in-all-kubernetes-pods-in-one-go-without-pod-restart-d7558f450dc0)
+- [https://sematext.com/blog/java-logging-frameworks/](https://sematext.com/blog/java-logging-frameworks/)
+
+![Spring Cloud Config-Server Architecture](./SpringCloudConfigServer.png)
 
 ```bash
 LOCATION="francecentral"
@@ -63,7 +72,6 @@ az extension update --name k8s-extension
 # https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/tutorial-use-gitops-flux2?
 az extension add -n k8s-configuration
 
-
 export ssh_key=aksadm
 echo -e 'y' | ssh-keygen -t rsa -b 4096 -f ~/.ssh/$ssh_key -C "youremail@groland.grd"
 
@@ -103,15 +111,7 @@ export REPOSITORY="hello"
 # https://learn.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli?tabs=azure-cli
 # tag_id=$(docker build --build-arg --no-cache -t "test-v0.0.1" . 2>/dev/null | awk '/Successfully built/{print $NF}')
 
-tag_id=$(DOCKER_BUILDKIT=0 docker build --build-arg --no-cache -t $REGISTRY_URL/$REPOSITORY/hello-service:v0.1.42 -f $DOCKERFILE_PATH . 2> /dev/null | awk '/Successfully built/{print $NF}')
-#tag_id=$(docker build --build-arg --no-cache -t $REGISTRY_URL/$REPOSITORY/hello-service:v0.1.42 -f $DOCKERFILE_PATH . 2> /dev/null | awk '/Successfully built/{print $NF}')
-#tag_id=v0.1.42
-#DOCKER_BUILDKIT=0 docker build --build-arg --no-cache -t $REGISTRY_URL/$REPOSITORY/hello-service:v0.1.42 -f $DOCKERFILE_PATH .
-
-#set -euo pipefail
-#access_token=$(az account get-access-token --query accessToken -o tsv)
-#refresh_token=$(curl https://${REGISTRY_URL}/oauth2/exchange -v -d "grant_type=access_token&service=${REGISTRY_URL}&access_token=${access_token}" | jq -r .refresh_token)
-#docker login $REGISTRY_URL -u 00000000-0000-0000-0000-000000000000 --password-stdin <<< "$refresh_token"
+tag_id=$(DOCKER_BUILDKIT=0 docker build --build-arg --no-cache -t hello-service -f $DOCKERFILE_PATH . 2> /dev/null | awk '/Successfully built/{print $NF}')
 
 # https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#individual-login-with-azure-ad
 az acr login --name $CONTAINER_REGISTRY
@@ -120,8 +120,8 @@ docker login $REGISTRY_URL -u 00000000-0000-0000-0000-000000000000 --password $T
 # az configure --defaults acr=${{ env.AZURE_CONTAINER_REGISTRY }}
 
 
-docker tag $REGISTRY_URL/$REPOSITORY/hello-service:v0.1.42 $REGISTRY_URL/$REPOSITORY/hello-service:$tag_id
-docker tag $REGISTRY_URL/$REPOSITORY/hello-service:$tag_id $REGISTRY_URL/$REPOSITORY/hello-service:latest
+docker tag hello-service $REGISTRY_URL/$REPOSITORY/hello-service:$tag_id
+docker tag hello-service $REGISTRY_URL/$REPOSITORY/hello-service:latest
 
 docker push "$REGISTRY_URL/$REPOSITORY/hello-service:latest"
 docker push "$REGISTRY_URL/$REPOSITORY/hello-service:$tag_id"
@@ -140,6 +140,7 @@ wget $GIT_CFG_URL/vets-service.yml -O $CONFIG_MAP_DIR/vets-service.yml
 wget $GIT_CFG_URL/visits-service.yml -O $CONFIG_MAP_DIR/visits-service.yml
 
 cp ./cnf/log4j2.yaml $CONFIG_MAP_DIR/log4j2.yaml
+cp ./cnf/log4j2.xml $CONFIG_MAP_DIR/log4j2.xml
 echo "About to generate the ConfigMap Manifest ..."
 
 # You can use kubectl create configmap to create a ConfigMap from multiple files in the same directory. 
@@ -152,8 +153,6 @@ kubectl create configmap spring-app-config --from-file=$CONFIG_MAP_DIR --dry-run
 ls -al $CONFIG_MAP_DIR
 kubectl apply -f k8s/spring-app-config.yaml
 
-
-
 mkdir k8s/deploy
 export IMAGE_TAG=$tag_id
 
@@ -165,7 +164,9 @@ kubectl apply -f k8s/deploy/hello-deployment.yaml
 kubectl apply -f k8s/deploy/hello-ingress.yaml
 kubectl apply -f k8s/deploy/hello-service.yaml
 
-# kubectl  run -it  --image="$REGISTRY_URL/$REPOSITORY/hello-service:$tag_id" -- sh
+# kubectl  run -it hello-test --labels=app=hello-service --image="$REGISTRY_URL/$REPOSITORY/hello-service:$tag_id" -- /bin/bash
+#  k exec -it  hello-service-74c6c76ff-4fq9j -- /bin/bash
+
 az extension add --name aks-preview
 az extension update --name aks-preview
 az feature register --namespace "Microsoft.ContainerService" --name "EnableImageCleanerPreview"
@@ -173,7 +174,7 @@ az feature show --namespace "Microsoft.ContainerService" --name "EnableImageClea
 az provider register --namespace Microsoft.ContainerService
 az provider list --query "[?registrationState=='Registered']" --output table
 az aks update -g $RG_APP -n $AKS_CLUSTER_NAME --enable-image-cleaner
-kubectl apply -f delete-images.yaml
+kubectl apply -f ./k8s/delete-images.yaml
 
 # Standard load Balancer Use Case
 # Use the command below to retrieve the External-IP of the Service. Make sure to allow a couple of minutes for the Azure Load Balancer to assign a public IP.
