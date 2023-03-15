@@ -1,7 +1,3 @@
-@description('A UNIQUE name')
-@maxLength(21)
-param appName string = 'hello${uniqueString(resourceGroup().id, subscription().id)}'
-
 param aksClusterPrincipalId string
 
 @allowed([

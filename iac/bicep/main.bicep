@@ -1,3 +1,19 @@
+/*
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-cli#inline-parameters 
+vim arrayContent.json
+[
+  "42.42.42.42"
+]
+
+export ssh_key=aksadm
+echo -e 'y' | ssh-keygen -t rsa -b 4096 -f ~/.ssh/$ssh_key -C "youremail@groland.grd"
+
+az deployment group create --name hello-spring -f ./iac/bicep/main.bicep -g rg-hello-aks-cm  \
+-p appName=hello42 -p location=francecentral \
+-p sshPublicKey=@~/.ssh/$ssh_key.pub
+
+*/
+
 @maxLength(21)
 param appName string = 'hello${uniqueString(resourceGroup().id, subscription().id)}'
 
@@ -5,13 +21,11 @@ param location string = resourceGroup().location
 param dnsPrefix string = 'hellospringaksconfigmap'
 param clusterName string = 'aks-${appName}'
 param aksVersion string = '1.24.6'
-param vnetName string = 'vnet-aks'
 
 @description('AKS Cluster UserAssigned Managed Identity name. Character limit: 3-128 Valid characters: Alphanumerics, hyphens, and underscores')
 param aksIdentityName string = 'id-aks-${appName}-cluster-dev-${location}-101'
 
 @description('The AKS SSH public key')
-@secure()
 param sshPublicKey string
 
 @description('IP ranges string Array allowed to call the AKS API server, specified in CIDR format, e.g. 137.117.106.88/29. see https://learn.microsoft.com/en-us/azure/aks/api-server-authorized-ip-ranges')

@@ -8,11 +8,6 @@ param acrName string = 'acr${appName}'
 @description('The Log Analytics workspace name used by the AKS cluster')
 param logAnalyticsWorkspaceName string = 'log-${appName}'
 
-@allowed([
-  'log-analytics'
-])
-param logDestination string = 'log-analytics'
-
 param appInsightsName string = 'appi-${appName}'
 
 param vnetName string = 'vnet-aks'
@@ -24,8 +19,6 @@ param aksSubnetName string = 'snet-aks'
 
 @description('AKS Cluster UserAssigned Managed Identity name. Character limit: 3-128 Valid characters: Alphanumerics, hyphens, and underscores')
 param aksIdentityName string = 'id-aks-${appName}-cluster-dev-${location}-101'
-
-param dnsZone string = 'cloudapp.azure.com'
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/workspaces?tabs=bicep
 resource logAnalyticsWorkspace  'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -109,18 +102,11 @@ output vnetId string = vnet.outputs.vnetId
 output vnetName string = vnet.outputs.vnetName
 output aksSubnetId string = vnet.outputs.aksSubnetId
 
-var vNetRules = [
-  {
-    'id': vnet.outputs.aksSubnetId
-    'ignoreMissingVnetServiceEndpoint': false
-  }
-]
 
 // https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/scope-extension-resources
 module roleAssignments './modules/aks/roleAssignments.bicep' = {
   name: 'role-assignments'
   params: {
-    appName: appName
     aksClusterPrincipalId: identities.outputs.aksIdentityPrincipalId
     networkRoleType: 'NetworkContributor'
     vnetName: vnetName
