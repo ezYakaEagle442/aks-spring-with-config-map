@@ -5,7 +5,7 @@ Configuration:
   properties:
     property:
       name: filename
-      value: target/test-yaml.log
+      value: hellospring.log
   thresholdFilter:
     level: debug
   appenders:
@@ -42,6 +42,6 @@ Configuration:
         AppenderRef:
           ref: File
     Root:
-      level: error
+      level: info
       AppenderRef:
         ref: STDOUT
