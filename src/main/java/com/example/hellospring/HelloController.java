@@ -5,12 +5,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+
 @RestController
 public class HelloController {
 
     @RequestMapping("/")
     public String index() {
+        //LoggerContext context = (LoggerContext) LogManager.getContext(false);
+        //context.setConfigLocation(new URI("/etc/config/log4j2.xml"));
         Logger logger = LoggerFactory.getLogger(HelloController.class);
+
         logger.trace("+++ TRACE Message");
         logger.debug("+++ DEBUG Message");
         logger.info("+++ INFO Message");
