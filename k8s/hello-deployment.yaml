@@ -16,7 +16,7 @@ spec:
         - name: hello-service
           env:
           - name: LOGGING_CONFIG # https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#application-properties.core.logging.config
-            value: /etc/config/log4j2.xml
+            value: /etc/config/log4j2.yaml
           image: ${CONTAINER_REGISTRY}.azurecr.io/${REPOSITORY}/hello-service:${IMAGE_TAG}
           imagePullPolicy: Always
           # By default, the /actuator/httpexchanges endpoint is disabled in Spring Boot 3. To enable it, you will need to add the following to your application.properties file
@@ -68,6 +68,5 @@ spec:
           configMap:
             name: spring-app-config 
             items:
-            - key:  log4j2.yaml  
-              path:  log4j2.yaml               
-        
+            - key:  log4j2.yaml
+              path:  log4j2.yaml
