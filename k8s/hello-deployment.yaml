@@ -14,6 +14,9 @@ spec:
       spec:
         containers:
         - name: hello-service
+          env:
+          - name: LOGGING_CONFIG # https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#application-properties.core.logging.config
+            value: /etc/config/log4j2.xml
           image: ${CONTAINER_REGISTRY}.azurecr.io/${REPOSITORY}/hello-service:${IMAGE_TAG}
           imagePullPolicy: Always
           # By default, the /actuator/httpexchanges endpoint is disabled in Spring Boot 3. To enable it, you will need to add the following to your application.properties file
@@ -54,7 +57,7 @@ spec:
 
           volumeMounts:
           - name: application-config 
-            mountPath:  /etc/config #  .spec.containers[].volumeMounts[].mountPath must be an unused directory name where you would like the ConfigMap to appear. NOT /tmp/app where the app.jar is located
+            mountPath: /etc/config #  .spec.containers[].volumeMounts[].mountPath must be an unused directory name where you would like the ConfigMap to appear. NOT /tmp/app where the app.jar is located
             readOnly: false
 
           # https://kubernetes.io/docs/concepts/configuration/configmap/
