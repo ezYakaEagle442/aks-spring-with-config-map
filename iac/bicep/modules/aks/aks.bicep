@@ -10,8 +10,6 @@ param location string = resourceGroup().location
 @description('The name of the Managed Cluster resource.')
 param clusterName string = 'aks-${appName}'
 
-@description('The AKS SSH public key')
-@secure()
 param sshPublicKey string
 
 @description('IP ranges string Array allowed to call the AKS API server, specified in CIDR format, e.g. 137.117.106.88/29. see https://learn.microsoft.com/en-us/azure/aks/api-server-authorized-ip-ranges')
@@ -51,15 +49,6 @@ param agentVMSize string = 'Standard_D2s_v3'
 
 @description('The AKS cluster Managed ResourceGroup')
 param nodeRG string = 'rg-MC-${appName}'
-
-@description('Add the Flux GitOps Add-on')
-param fluxGitOpsAddon bool = false
-
-@description('Add the Dapr extension')
-param daprAddon bool = false
-
-@description('Enable high availability (HA) mode for the Dapr control plane')
-param daprAddonHA bool = false
 
 @description('Add the KEDA Add-on')
 param kedaAddon bool = false
@@ -172,7 +161,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-10-02-preview' = {
         enabled: true
       }
       gitops: {
-        enabled: true
+        enabled: false
         config: {          
         }
       }      
@@ -301,43 +290,3 @@ resource AKSDiags 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
     ]
   }
 }
-
-
-resource fluxAddon 'Microsoft.KubernetesConfiguration/extensions@2022-11-01' = if(fluxGitOpsAddon) {
-  name: 'flux'
-  scope: aks
-  properties: {
-    extensionType: 'microsoft.flux'
-    autoUpgradeMinorVersion: true
-    releaseTrain: 'Stable'
-    scope: {
-      cluster: {
-        releaseNamespace: 'flux-system'
-      }
-    }
-    configurationProtectedSettings: {}
-  }
-  dependsOn: [daprExtension] //Chaining dependencies because of: https://github.com/Azure/AKS-Construction/issues/385
-}
-output fluxReleaseNamespace string = fluxGitOpsAddon ? fluxAddon.properties.scope.cluster.releaseNamespace : ''
-
-resource daprExtension 'Microsoft.KubernetesConfiguration/extensions@2022-11-01' = if(daprAddon) {
-  name: 'dapr'
-  scope: aks
-  properties: {
-      extensionType: 'Microsoft.Dapr'
-      autoUpgradeMinorVersion: true
-      releaseTrain: 'Stable'
-      configurationSettings: {
-          'global.ha.enabled': '${daprAddonHA}'
-      }
-      scope: {
-        cluster: {
-          releaseNamespace: 'dapr-system'
-        }
-      }
-      configurationProtectedSettings: {}
-  }
-}
-
-output daprReleaseNamespace string = daprAddon ? daprExtension.properties.scope.cluster.releaseNamespace : ''
