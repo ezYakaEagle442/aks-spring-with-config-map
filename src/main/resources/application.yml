@@ -9,9 +9,14 @@ management:
     enabled-by-default: false
     web:
       base-path: "/actuator"
-      exposure: # https://docs.spring.io/spring-boot/docs/2.6.3/reference/html/actuator.html#actuator.endpoints.exposing
+      exposure: # https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/actuator.html#actuator.endpoints.exposing
         include: "health,info,startup,env,mappings,metrics" # "*"
-        exclude: "beans"    
+        exclude: "beans"
+    jmx:
+      base-path: "/actuator"
+      exposure: # https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/actuator.html#actuator.endpoints.exposing
+        include: "health,info,startup,env,mappings,metrics" # "*"
+        exclude: "beans"           
   endpoint:
     health:
       enabled: true
@@ -27,7 +32,7 @@ management:
           include: "livenessState"
         #startup:
           #include: readinessProbe
-    startup: # https://docs.spring.io/spring-boot/docs/2.6.6/reference/html/actuator.html#actuator.endpoints.kubernetes-probes
+    startup: # https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/actuator.html#actuator.endpoints.kubernetes-probes
       enabled: true 
     probes:
         enabled: true      
@@ -38,4 +43,4 @@ management:
     mappings:
       enabled: true            
   server:
-    port: 8080
+    port: 8081
