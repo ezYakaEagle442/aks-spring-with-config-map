@@ -28,8 +28,10 @@
 		<spring-jcl.version>6.0.6</spring-jcl.version>
 		<log4j-spring-boot.version>2.20.0</log4j-spring-boot.version>
 		<log4j-to-slf4j.version>2.20.0</log4j-to-slf4j.version>
+		<log4j-slf4j-impl.version>2.20.0</log4j-slf4j-impl.version>
 		<log4j-slf4j2-impl.version>2.20.0</log4j-slf4j2-impl.version>
 		<log4j-api.version>2.20.0</log4j-api.version>
+		<log4j.version>2.20.0</log4j.version>
 		<log4j-core.version>2.20.0</log4j-core.version>
 		<log4j-jcl.version>2.20.0</log4j-jcl.version>
 		<slf4j-api.version>2.0.6</slf4j-api.version>
@@ -42,6 +44,22 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+
+
+		<!-- https://www.baeldung.com/spring-boot-logback-log4j2 
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-spring-boot</artifactId>
+			<version>${log4j-spring-boot.version}</version>
+		</dependency>
+		-->
+		
+		<!-- 		
+		https://springframework.guru/using-log4j-2-spring-boot/ 
+		https://springframework.guru/log4j-2-configuration-using-xml/
+		https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.log4j
+		https://logging.apache.org/log4j/2.x/manual/configuration.html#configuration-with-yaml
+		-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -56,31 +74,51 @@
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-classic</artifactId>
-				</exclusion>
+				</exclusion>							
 
-				<!-- The exception “org.apache.logging.slf4j.SLF4JLoggerContext cannot be cast to org.apache.logging.log4j.core.LoggerContext” occurs 
-				because project build with maven and contains spring-boot-starter-web which imports the dependency because we can’t skip with spring-boot-starter-web and need log4j. -->
 				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-over-slf4j</artifactId>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
 				</exclusion>
 
+				<!--
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
-				</exclusion>
+				</exclusion>	
 
 				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-slf4j2-impl</artifactId>
-				</exclusion>
-
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>										
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-slf4j-imp</artifactId>
+				</exclusion>	
+				-->
 
 			</exclusions>
+		</dependency>
+
+		<!-- 
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-api.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j2-impl</artifactId>
+			<version>${log4j-slf4j2-impl.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${log4j-slf4j-impl.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-to-slf4j</artifactId>
+			<version>${log4j-to-slf4j.version}</version>
 		</dependency>
 
 		<dependency>
@@ -106,19 +144,28 @@
 			<artifactId>spring-jcl</artifactId>
 			<version>${spring-jcl.version}</version>
 		</dependency>
+		-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j2</artifactId>
+			
 			<exclusions>
+
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>	
+
+			<!--
 				<exclusion>
 					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-slf4j2-impl</artifactId>
+					<artifactId>log4j-over-slf4j</artifactId>
 				</exclusion>
 
 				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
 
 				<exclusion>
@@ -132,17 +179,27 @@
 				</exclusion>
 
 				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>				
-			</exclusions>			
+					<groupId>org.slf4j</groupId>
+					<artifactId>log4j-slf4j2-impl</artifactId>
+				</exclusion>
+
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+
+			-->						
+			</exclusions>	
+			
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			
 			<exclusions>
+				<!-- 
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>log4j-slf4j2-impl</artifactId>
@@ -162,42 +219,14 @@
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
-
+				-->
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-classic</artifactId>
 				</exclusion>				
-			</exclusions>				
-		</dependency>
-
-		<!-- https://www.baeldung.com/spring-boot-logback-log4j2 -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-spring-boot</artifactId>
-			<version>${log4j-spring-boot.version}</version>
-		</dependency>
-
-		<!-- 
+			</exclusions>	
 		
-		https://springframework.guru/using-log4j-2-spring-boot/ 
-		https://springframework.guru/log4j-2-configuration-using-xml/
-		https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.log4j
-		https://logging.apache.org/log4j/2.x/manual/configuration.html#configuration-with-yaml
-		-->
-
-		<!--  
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j-api.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j2-impl</artifactId>
-			<version>${log4j-slf4j2-impl.version}</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -209,8 +238,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		-->
 
 	</dependencies>
 
