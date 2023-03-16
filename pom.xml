@@ -40,10 +40,29 @@
 	<dependencies>
 
 		<!-- By default, the /actuator/httpexchanges endpoint is disabled in Spring Boot 3. To enable it, you will need to add the following to your application.properties file -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jul</artifactId>
+				</exclusion>
+
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-to-slf4j</artifactId>
+				</exclusion>
+				
+			</exclusions>						
 		</dependency>
+	
 
 
 		<!-- https://www.baeldung.com/spring-boot-logback-log4j2 
@@ -53,7 +72,7 @@
 			<version>${log4j-spring-boot.version}</version>
 		</dependency>
 		-->
-		
+
 		<!-- 		
 		https://springframework.guru/using-log4j-2-spring-boot/ 
 		https://springframework.guru/log4j-2-configuration-using-xml/
@@ -71,17 +90,18 @@
 					<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
 
+				<!-- 
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-classic</artifactId>
 				</exclusion>							
+				-->
 
 				<exclusion>
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
 
-				<!--
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
@@ -89,9 +109,8 @@
 
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-slf4j-imp</artifactId>
+					<artifactId>log4j-slf4j-impl</artifactId>
 				</exclusion>	
-				-->
 
 			</exclusions>
 		</dependency>
@@ -153,19 +172,24 @@
 			<exclusions>
 
 				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>	
-
-			<!--
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-over-slf4j</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-jul</artifactId>
 				</exclusion>
 
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
+				</exclusion>
+
+				<!-- 	
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>	
+					
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>log4j-over-slf4j</artifactId>
 				</exclusion>
 
 				<exclusion>
@@ -199,7 +223,7 @@
 			<scope>test</scope>
 			
 			<exclusions>
-				<!-- 
+
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>log4j-slf4j2-impl</artifactId>
@@ -219,11 +243,12 @@
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
-				-->
+
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-classic</artifactId>
 				</exclusion>				
+
 			</exclusions>	
 		
 		</dependency>
@@ -231,12 +256,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+			<!--
 			<exclusions>
 				<exclusion>
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-classic</artifactId>
 				</exclusion>
 			</exclusions>
+			-->
 		</dependency>
 
 	</dependencies>
