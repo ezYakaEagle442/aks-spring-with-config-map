@@ -12,6 +12,7 @@ Read :
 - [https://gap.gjensidige.io/docs/guides/preparing-spring-boot-app-for-kubernetes](https://gap.gjensidige.io/docs/guides/preparing-spring-boot-app-for-kubernetes)
 - [https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.logback](https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.logback)
 - [https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.log4j](https://docs.spring.io/spring-boot/docs/3.0.4/reference/html/howto.html#howto.logging.log4j)
+- [https://www.baeldung.com/spring-boot-logback-log4j2](https://www.baeldung.com/spring-boot-logback-log4j2)
 
 ![Spring Cloud Config-Server Architecture](./SpringCloudConfigServer.png)
 
@@ -108,9 +109,10 @@ acr_push_role="/subscriptions/$SUBSCRIPTION_ID/providers/Microsoft.Authorization
 az role assignment create --assignee $USR_SPN_ID --role $acr_push_role --scope $ACR_ID
 
 
- mvn -B clean package --file pom.xml -DskipTests 
- java -Dlogging.config=./cnf/log4j2.xml -jar target/hellospring-0.0.1-SNAPSHOT.jar
- 
+mvn -B clean package --file pom.xml -DskipTests 
+java -Dlogging.config=./cnf/log4j2.xml -jar target/hellospring-0.0.1-SNAPSHOT.jar
+mvn dependency:tree
+
 # image: ${CONTAINER_REGISTRY}.azurecr.io/${REPO}/hello-service:${IMAGE_TAG}
 DOCKERFILE_PATH="src/main/docker/Dockerfile"
 export REPOSITORY="hello"
