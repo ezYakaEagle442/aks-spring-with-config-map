@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug" name="XMLConfigTest" monitorInterval="5" packages="com.example.hellospring">
+<!-- https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration -->
+<Configuration status="INFO" name="XMLConfigTest" monitorInterval="5">
   <Properties>
     <Property name="filename">hellospring.log</Property>
   </Properties>
   <ThresholdFilter level="trace"/>
  
   <Appenders>
+
     <Console name="STDOUT">
       <PatternLayout pattern="%m MDC%X%n"/>
     </Console>
+  
     <Console name="FLOW">
       <!-- this pattern outputs class name and line number -->
       <PatternLayout pattern="%C{1}.%M %m %ex%n"/>
@@ -17,24 +20,26 @@
         <MarkerFilter marker="EXCEPTION" onMatch="ACCEPT" onMismatch="DENY"/>
       </filters>
     </Console>
+  
     <File name="File" fileName="${filename}">
       <PatternLayout>
         <pattern>%d %p %C{1.} [%t] %m%n</pattern>
       </PatternLayout>
     </File>
-    <List name="List">
-    </List>
+
   </Appenders>
  
   <Loggers>
-    <Logger name="com.example.hellospring.HelloController" level="debug" additivity="false">
+      <!--
+      <Logger name="com.example.hellospring" level="error" additivity="false">
+      
       <ThreadContextMapFilter>
         <KeyValuePair key="test" value="123"/>
       </ThreadContextMapFilter>
       <AppenderRef ref="STDOUT"/>
     </Logger>
- 
-    <Logger name="com.example.hellospring.HelloController" level="debug" additivity="false">
+
+    <Logger name="com.example.hellospring" level="debug" additivity="false">
       <Property name="user">${sys:user.name}</Property>
       <AppenderRef ref="File">
         <ThreadContextMapFilter>
@@ -43,8 +48,15 @@
       </AppenderRef>
       <AppenderRef ref="STDOUT" />
     </Logger>
- 
-    <Root level="debug">
+
+    -->
+
+     <Logger name="com.example.hellospring" level="warn" additivity="false">
+      <AppenderRef ref="File"></AppenderRef>
+      <AppenderRef ref="STDOUT" />
+    </Logger>
+
+    <Root level="info">
       <AppenderRef ref="STDOUT"/>
     </Root>
   </Loggers>
