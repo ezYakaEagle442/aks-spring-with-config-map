@@ -1,6 +1,6 @@
 Configuration:
   name: YAMLConfigTest
-  status: warn
+  status: trace
   monitorInterval: 5
   properties:
     property:
@@ -25,23 +25,14 @@ Configuration:
  
   Loggers:
     logger:
-      -
+      - 
         name: com.example.hellospring.HelloController
         level: debug
         additivity: false
-        ThreadContextMapFilter:
-          KeyValuePair:
-            key: test
-            value: 123
         AppenderRef:
           ref: STDOUT
-      -
-        name: org.apache.logging.log4j.test2
-        level: debug
-        additivity: false
-        AppenderRef:
-          ref: File
+
     Root:
-      level: info
+      level: debug
       AppenderRef:
         ref: STDOUT

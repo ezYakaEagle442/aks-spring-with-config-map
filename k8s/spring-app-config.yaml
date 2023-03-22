@@ -1,0 +1,41 @@
+apiVersion: v1
+data:
+  log4j2.xml: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration
+    -->\n<Configuration status=\"INFO\" name=\"XMLConfigTest\" monitorInterval=\"5\">\n
+    \ <Properties>\n    <Property name=\"filename\">hellospring.log</Property>\n  </Properties>\n
+    \ <ThresholdFilter level=\"trace\"/>\n \n  <Appenders>\n\n    <Console name=\"STDOUT\">\n
+    \     <PatternLayout pattern=\"%m MDC%X%n\"/>\n    </Console>\n  \n    <Console
+    name=\"FLOW\">\n      <!-- this pattern outputs class name and line number -->\n
+    \     <PatternLayout pattern=\"%C{1}.%M %m %ex%n\"/>\n      <filters>\n        <MarkerFilter
+    marker=\"FLOW\" onMatch=\"ACCEPT\" onMismatch=\"NEUTRAL\"/>\n        <MarkerFilter
+    marker=\"EXCEPTION\" onMatch=\"ACCEPT\" onMismatch=\"DENY\"/>\n      </filters>\n
+    \   </Console>\n  \n    <File name=\"File\" fileName=\"${filename}\">\n      <PatternLayout>\n
+    \       <pattern>%d %p %C{1.} [%t] %m%n</pattern>\n      </PatternLayout>\n    </File>\n\n
+    \ </Appenders>\n \n  <Loggers>\n      <!--\n      <Logger name=\"com.example.hellospring\"
+    level=\"error\" additivity=\"false\">\n      \n      <ThreadContextMapFilter>\n
+    \       <KeyValuePair key=\"test\" value=\"123\"/>\n      </ThreadContextMapFilter>\n
+    \     <AppenderRef ref=\"STDOUT\"/>\n    </Logger>\n\n    <Logger name=\"com.example.hellospring\"
+    level=\"debug\" additivity=\"false\">\n      <Property name=\"user\">${sys:user.name}</Property>\n
+    \     <AppenderRef ref=\"File\">\n        <ThreadContextMapFilter>\n          <KeyValuePair
+    key=\"test\" value=\"123\"/>\n        </ThreadContextMapFilter>\n      </AppenderRef>\n
+    \     <AppenderRef ref=\"STDOUT\" />\n    </Logger>\n\n    -->\n\n     <Logger
+    name=\"com.example.hellospring\" level=\"warn\" additivity=\"false\">\n      <AppenderRef
+    ref=\"File\"></AppenderRef>\n      <AppenderRef ref=\"STDOUT\" />\n    </Logger>\n\n
+    \   <Root level=\"info\">\n      <AppenderRef ref=\"STDOUT\"/>\n    </Root>\n
+    \ </Loggers>\n \n</Configuration>"
+  log4j2.yaml: "Configuration:\n  name: YAMLConfigTest\n  status: warn\n  monitorInterval:
+    5\n  properties:\n    property:\n      name: filename\n      value: hellospring.log\n
+    \ thresholdFilter:\n    level: debug\n  appenders:\n    Console:\n      name:
+    STDOUT\n      target: SYSTEM_OUT\n      PatternLayout:\n        Pattern: \"%m%n\"\n
+    \   File:\n      name: File\n      fileName: ${filename}\n      PatternLayout:\n
+    \       Pattern: \"%d %p %C{1.} [%t] %m%n\"\n      Filters:\n        ThresholdFilter:\n
+    \         level: error\n \n  Loggers:\n    logger:\n      -\n        name: com.example.hellospring.HelloController\n
+    \       level: debug\n        additivity: false\n        ThreadContextMapFilter:\n
+    \         KeyValuePair:\n            key: test\n            value: 123\n        AppenderRef:\n
+    \         ref: STDOUT\n      -\n        name: org.apache.logging.log4j.test2\n
+    \       level: debug\n        additivity: false\n        AppenderRef:\n          ref:
+    File\n    Root:\n      level: info\n      AppenderRef:\n        ref: STDOUT"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: spring-app-config
