@@ -15,10 +15,18 @@ param vnetCidr string = '172.16.0.0/16'
 param aksSubnetCidr string = '172.16.1.0/24'
 param aksSubnetName string = 'snet-aks'
 
-
-
 @description('AKS Cluster UserAssigned Managed Identity name. Character limit: 3-128 Valid characters: Alphanumerics, hyphens, and underscores')
 param aksIdentityName string = 'id-aks-${appName}-cluster-dev-${location}-101'
+
+@allowed([
+  'CapacityReservation'
+  'Free'
+  'LACluster'
+  'Standalone'
+]
+)
+@description('The Log AnalyticsWorkspace SKU - see https://learn.microsoft.com/en-us/azure/azure-monitor/logs/cost-logs')
+param laSKU string = 'LACluster'
 
 // https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/workspaces?tabs=bicep
 resource logAnalyticsWorkspace  'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -30,7 +38,7 @@ resource logAnalyticsWorkspace  'Microsoft.OperationalInsights/workspaces@2022-1
       searchVersion: 1
     }
     sku: {
-      name: 'PerGB2018'
+      name: laSKU
     }
   })
 }
