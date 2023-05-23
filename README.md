@@ -221,8 +221,21 @@ Using generated security password: befd946e-4242-4242-4242-989ebcd52c97
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 ```
 
+# GitOps
 
-## K8S Tips
+read the [docs](https://learn.microsoft.com/en-us/azure/azure-arc/kubernetes/conceptual-gitops-flux2?toc=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fazure%2Faks%2Ftoc.json&bc=https%3A%2F%2Flearn.microsoft.com%2Fen-us%2Fazure%2Fbread%2Ftoc.json)
+
+pre-req: enable GitOps add-on from the Azure portal
+
+```sh
+az k8s-extension create --extensionType=microsoft.flux --cluster-name $AKS_CLUSTER_NAME  -g $RG_APP --cluster-type managedClusters --scope cluster --release-train stable
+
+
+```
+
+
+
+# K8S Tips
 
 
 ```sh
