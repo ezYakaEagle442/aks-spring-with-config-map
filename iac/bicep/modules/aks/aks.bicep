@@ -30,8 +30,8 @@ param authorizedIPRanges array = []
 param aksAdminUserName string = '${appName}-admin'
 
 // Preview: https://docs.microsoft.com/en-us/azure/aks/supported-kubernetes-versions?tabs=azure-cli#kubernetes-version-alias-preview
-@description('The AKS Cluster alias version')
-param k8sVersion string = '1.24.6' //1.25.2 Alias in Preview
+@description('The AKS Cluster alias version, check with az aks get-versions --location westeurope --output table')
+param k8sVersion string = '1.26.3'
 
 @description('The SubnetID to deploy the AKS Cluster')
 param subnetID string
